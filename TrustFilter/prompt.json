@@ -1,0 +1,21 @@
+{
+  "task_name": "TrustFilter",
+  "domain": "multimodal data curation / vision-language training data quality",
+  "goal": "Improve the image-text pair filtration method: maximize detection_f1 for identifying corrupted (misaligned or degraded) image-caption pairs, beating the CLIP-similarity baseline at a fixed keep ratio.",
+  "dataset": "1,200 image-caption pairs sampled deterministically (seed=42) from COCO val2017 (downloaded and cached on first run). 30% of pairs are synthetically corrupted by a frozen, seeded generator using four corruption types: caption swapped with another image's caption, word-order shuffling, truncation to a 3-word fragment, and replacement with a generic template caption. Ground-truth corruption labels are known to the evaluator only.",
+  "baseline": "CLIP ViT-B/32 cosine similarity between image and caption embeddings; the 30% lowest-scoring pairs are flagged as corrupted (keep ratio fixed at 70%).",
+  "metrics": {
+    "primary": "detection_f1",
+    "secondary": ["kept_clip_similarity", "runtime_seconds"],
+    "optimization_direction": "maximize"
+  },
+  "constraints": [
+    "Do NOT modify the data loading, corruption generator, or evaluation logic - only the scoring function (the SCORING section of experiment.py) may be changed",
+    "The keep ratio is fixed at (1 - corruption_rate) and must not be changed",
+    "A full run must complete within ~10 minutes on a single modest GPU (or ~20 minutes CPU-only)",
+    "Network access only for first-run downloads of public models/data (cached thereafter); small pretrained models from HuggingFace are allowed",
+    "Must remain a single self-contained experiment.py using PyTorch/transformers"
+  ],
+  "task_description": "This task is based on 'Trust the Model: Compact VLMs as In-Context Judges for Image-Text Data Quality' (Humain, IEEE MLSP 2025). The paper shows that filtering noisy web-scraped image-caption training data with a compact fine-tuned VLM judge produces higher-quality training corpora than CLIP-similarity-based scoring: their filtered 18% subset beat the full dataset on alignment (CLIP sim 0.298 -> 0.313), caption fluency (perplexity 170.2 -> 137.2), and downstream captioning preference (59.4%). The paper explicitly criticizes CLIP-based scoring functions as limited in interpretability and semantic richness, and flags over-filtering (lost diversity) as an open trade-off.\n\nThe baseline here is exactly the CLIP-similarity filter the paper argues against. Your job is to propose and implement better scoring functions for detecting corrupted pairs. Promising directions include, but are not limited to: caption fluency signals (e.g., language-model perplexity of the caption, catching shuffles/truncations that CLIP embeddings are insensitive to); hybrid scores combining alignment and fluency signals; caption-structure heuristics (length, grammaticality, generic-phrase detection); object-word grounding checks (do caption nouns appear in the image per CLIP zero-shot classification); score normalization per caption length; or scoring with a small pretrained VLM as a judge (as the paper does). Combining complementary signals is likely to beat any single signal because the four corruption types have different footprints: swapped captions are fluent but misaligned (CLIP catches these), while shuffled/truncated captions may remain lexically 'aligned' but are disfluent (CLIP misses these; a language model catches them).",
+  "fix_direction": ""
+}

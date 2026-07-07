@@ -1,0 +1,19 @@
+{
+  "task_name": "PaperTask",
+  "domain": "<REPLACE: the paper's field, e.g. 'information retrieval' / 'time-series forecasting'>",
+  "goal": "<REPLACE: one sentence — improve <primary metric> over the method from <paper title / company>, without violating the constraints>",
+  "dataset": "<REPLACE: the public dataset they evaluate on, or a faithful synthetic proxy generated inside experiment.py — describe size/shape so the agents can reason about it>",
+  "baseline": "<REPLACE: one-line description of the paper's method as implemented in code/experiment.py>",
+  "metrics": {
+    "primary": "<REPLACE: metric key EXACTLY as written into final_info.json, e.g. 'recall_at_10'>",
+    "secondary": ["<REPLACE-or-delete: e.g. 'latency_ms'>"],
+    "optimization_direction": "<REPLACE: 'maximize' or 'minimize'>"
+  },
+  "constraints": [
+    "<REPLACE: e.g. Training/eval must complete within 60 seconds on one GPU>",
+    "<REPLACE: e.g. Must use PyTorch>",
+    "<REPLACE: e.g. No external downloads at runtime>"
+  ],
+  "task_description": "<REPLACE: the meaty part — 1-3 paragraphs. (1) What the paper does and how the baseline implements it. (2) Where you suspect improvement is possible (the Brainstormer reads this as its seed directions). (3) Anything the ideas must respect. Write it like a brief to a sharp new hire.>",
+  "fix_direction": ""
+}
